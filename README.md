@@ -1,6 +1,6 @@
 # aviaseles (aviaseles)
 
-aviaseles
+https://evgenychernov28.github.io/aviasales/spa/#/
 
 ## Install the dependencies
 ```bash
