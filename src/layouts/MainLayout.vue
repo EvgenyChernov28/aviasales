@@ -16,7 +16,6 @@ export default defineComponent({
 
 	setup() {
 		const leftDrawerOpen = ref(false);
-
 		return {
 			leftDrawerOpen,
 			toggleLeftDrawer() {

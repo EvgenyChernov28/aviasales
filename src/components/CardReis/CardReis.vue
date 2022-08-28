@@ -26,8 +26,8 @@
 					outlined
 					v-model="moneyMin"
 					type="number"
-					min="0"
-					max="149335"
+					:min="getMinPrice"
+					:max="getMaxPrice"
 					dense
 					class="q-ma-xs"
 					@update:model-value="getCurrentFlight"
@@ -38,8 +38,8 @@
 					outlined
 					v-model="moneyMax"
 					type="number"
-					min="0"
-					max="149335"
+					:min="getMinPrice"
+					:max="getMaxPrice"
 					dense
 					class="q-ma-xs"
 					@update:model-value="getCurrentFlight"
@@ -66,7 +66,7 @@
 							<q-img
 								:src="getImgUrl(flight.flight.carrier.airlineCode)"
 								alt="Пустота"
-								style="max-height: 60px"
+								style="max-height: 60px; min-width: 100px"
 								no-spinner
 								width="220px"
 							/>
@@ -142,7 +142,6 @@
 								{{ leg.segments.length - 1 }} пересадка
 							</div>
 						</div>
-
 						<div>рейс выполняет: {{ leg.segments[0].airline.caption }}</div>
 					</q-card-section>
 
@@ -164,6 +163,8 @@ export default {
 	setup() {
 		const store = useStore();
 		const getMinPriceSortAviasels = computed(() => store.getters["aviasels/getMinPriceSortAviasels"]);
+		const getMaxPrice = computed(() => store.getters["aviasels/getMaxPrice"]);
+		const getMinPrice = computed(() => store.getters["aviasels/getMinPrice"]);
 		const currentFlights = ref([]);
 		const optionSort = [
 			{ label: " - по возврастанию цены", value: "increasePrice" },
@@ -176,13 +177,9 @@ export default {
 			{ label: " - без пересадок", value: "withoutTransfer" },
 		];
 		const groupFilter = ref([]);
-		const moneyMin = ref(0);
-		const moneyMax = ref(149335);
+		const moneyMin = ref(getMinPrice.value);
+		const moneyMax = ref(getMaxPrice.value);
 
-		const optionsAirlines = [
-			{ label: " - LOT Polish Airlines", value: "LO" },
-			{ label: " - Аэрофлот - российские авиалинии", value: "SU" },
-		];
 		const groupAirlines = ref([]);
 
 		const getCurrentFlight = () => {
@@ -221,9 +218,13 @@ export default {
 		const getImgUrl = (imgAirlineCode) => {
 			let images;
 			try {
-				images = require("../../assets/" + imgAirlineCode + ".png");
+				images = require("../../assets/" + imgAirlineCode + ".svg");
 			} catch (error) {
-				images = require("../../assets/" + "LOGO" + ".png");
+				try {
+					images = require("../../assets/" + imgAirlineCode + ".png");
+				} catch (err) {
+					images = require("../../assets/" + "LOGO" + ".png");
+				}
 			}
 			return images;
 		};
@@ -315,6 +316,7 @@ export default {
 			}
 		};
 
+		const optionsAirlines = computed(() => store.getters["aviasels/getAllAirlines"]);
 		return {
 			getImgUrl,
 			currentFlights,
@@ -331,6 +333,8 @@ export default {
 			moneyMax,
 			optionsAirlines,
 			groupAirlines,
+			getMaxPrice,
+			getMinPrice,
 		};
 	},
 };
